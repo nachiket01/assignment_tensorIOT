@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parking Lot Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #canvas {
+      position: relative;
+      border: 2px solid #000;
+    }
+
+    .spot {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 2px solid black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <input type="file" id="fileInput" accept=".json">
+  <div id="canvas"></div>
+
+  <script>
+    document.getElementById('fileInput').addEventListener('change', handleFile);
+
+    function handleFile(event) {
+      const file = event.target.files[0];
+      
+      if (!file) {
+        alert('No file selected!');
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const jsonData = JSON.parse(e.target.result);
+        renderParkingLot(jsonData);
+      };
+
+      reader.readAsText(file);
+    }
+
+    function renderParkingLot(data) {
+      const canvas = document.getElementById('canvas');
+      canvas.innerHTML = ''; // Clear previous content
+
+      Object.keys(data).forEach((spot, index) => {
+        const x = (index % 10) * 50;
+        const y = Math.floor(index / 10) * 50;
+        const color = data[spot] === 'Empty' ? 'green' : 'red';
+
+        const spotDiv = document.createElement('div');
+        spotDiv.classList.add('spot');
+        spotDiv.style.left = `${x}px`;
+        spotDiv.style.top = `${y}px`;
+        spotDiv.style.backgroundColor = color;
+
+        const spotNumber = document.createElement('span');
+        spotNumber.textContent = spot;
+        spotDiv.appendChild(spotNumber);
+
+        canvas.appendChild(spotDiv);
+      });
+    }
+  </script>
+</body>
+</html>
+
